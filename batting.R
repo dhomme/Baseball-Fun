@@ -20,7 +20,7 @@ batting$OPS = batting$SLG + batting$OBP
 
 nl_rank = c()
 j = 1
-for(i in years[years>1974]) {
+for(i in years[years<=1974]) {
   print(i)
 #   ## AL
 #   y_AL = subset(batting, yearID == i & PA > 500 & lgID == "AL")
@@ -48,8 +48,8 @@ for(i in years[years>1974]) {
 #   }
   #print(this_years_mvp)
   #al_result = rbind(al_result, this_years_mvp)
-  ab_required = round(max(subset(batting, yearID == i & lgID == "NL")$G, na.rm = T)*3.1)
-  y_NL = subset(batting, yearID == i & PA > ab_required & lgID == "NL")
+  ab_required = round(max(subset(batting, yearID == i & lgID == "AL")$G, na.rm = T)*3.1)
+  y_NL = subset(batting, yearID == i & PA > ab_required & lgID == "AL")
   y_NL$ZPA = ZScore(y_NL$PA)
   y_NL$ZR = ZScore(y_NL$R)
   y_NL$ZAVG = ZScore(y_NL$AVG)
@@ -66,7 +66,7 @@ for(i in years[years>1974]) {
   y_NL$ZE = ZScore(-y_NL$E)
   y_NL$RE = rank(y_NL$E)
   
-  nlmvp = subset(mvp, yearID == i & lgID == "NL")
+  nlmvp = subset(mvp, yearID == i & lgID == "AL")
   this_years_mvp = subset(y_NL[,c("lgID", "yearID",  "playerID", "W", "L", "AVG", "OPS", "HR", "RAVG", "RHR", "RSLG", "ROBP", "RSB", "ZAVG", "ZHR", "ZSLG", "ZOBP", "ZSB", "ZE")], playerID == nlmvp$playerID)
   m_zs = sqldf('select yearID, max(ZSLG) as ZSLG, max(ZAVG) as ZAVG, max(ZHR) as ZHR, max(ZOBP) as ZOBP, max(ZSB) as ZSB, max(ZE) as ZE from y_NL where W > L')
   if(j == 1) {
@@ -104,6 +104,7 @@ for(i in years[years>1974]) {
   #if(i >= 1979) stop("Keep back some data from testing")
 }
 summary(nl_rank)
+plot(nl_rank)
 # > # > summary(nl_rank)
 #   > # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #   > # 1.000   1.000   1.000   3.026   4.000  20.000 
